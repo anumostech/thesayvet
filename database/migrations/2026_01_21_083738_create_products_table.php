@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id(); 
             $table->unsignedBigInteger('category_id')->index();
             $table->string('product_name', 255);
+            $table->string('product_image', 255);
             $table->string('product_code', 100)->unique();
             $table->string('dosage_form', 100); 
             $table->decimal('quantity', 10, 2); 
