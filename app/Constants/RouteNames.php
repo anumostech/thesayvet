@@ -26,4 +26,13 @@ class RouteNames
     public const USER_EDIT = 'account.users.user-edit';
     public const USER_UPDATE = 'account.users.user-update';
     public const USER_DELETE = 'account.users.user-delete';
+
+    // Customers
+    public const CUSTOMER_ADD = 'account.customers.customer-add';
+    public const CUSTOMER_STORE = 'account.customers.customer-store';
+    public const CUSTOMER_LIST = 'account.customers.customer-list';
+    public const CUSTOMER_SHOW = 'account.customers.customer-show';
+    public const CUSTOMER_EDIT = 'account.customers.customer-edit';
+    public const CUSTOMER_UPDATE = 'account.customers.customer-update';
+    public const CUSTOMER_DELETE = 'account.customers.customer-delete';
 }
