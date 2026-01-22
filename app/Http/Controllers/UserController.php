@@ -2,37 +2,50 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\RouteNames;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function indexUser()
     {
-        return User::latest()->get();
+        $users = User::with('users.userdetails')->where('status', 'active')->get();
+        return view('account.users.users-list', [
+            'users' => $users
+        ]);
     }
 
-    public function store(Request $request)
+    public function storeUser(Request $request)
     {
-        $data = $request->validate([
+        $request->validate([
             'username' => 'required|unique:users',
             'password' => 'required|min:6',
             'type' => 'required|in:admin,staff,customer',
             'status' => 'required|in:active,inactive'
         ]);
 
-        $data['password'] = Hash::make($data['password']);
+        $user = new User();
+        $user->username = $request->username;
+        $user->password = Hash::make($request->password);
+        $user->type = $request->type;
+        $user->status = 'active';
 
-        return User::create($data);
+        $user->save();
+
+        return redirect()->route(RouteNames::USER_LIST)->with('success', 'User added successfully');
     }
 
-    public function show($id)
+    public function showUser($id)
     {
-        return User::findOrFail($id);
+        $user = User::findOrFail($id);
+        return view('account.users.users-show', [
+            'user' => $user
+        ]); 
     }
 
-    public function update(Request $request, $id)
+    public function updateUser(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
@@ -48,13 +61,15 @@ class UserController extends Controller
         }
 
         $user->update($data);
-        return $user;
+
+        return redirect()->route(RouteNames::USER_LIST)->with('success', 'User updated successfully');
     }
 
-    public function destroy($id)
+    public function deleteUser($id)
     {
-        User::findOrFail($id)->delete();
-        return response()->json(['message' => 'User deleted']);
+        $user = User::findOrFail($id);
+        $user->delete();
+        
+        return redirect()->route(RouteNames::USER_LIST)->with('success', 'User deleted successfully');
     }
 }
-
