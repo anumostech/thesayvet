@@ -23,7 +23,7 @@ class User extends Authenticatable
     ];
 
     // Relationships
-    public function details()
+    public function userdetails()
     {
         return $this->hasOne(UserDetail::class);
     }
