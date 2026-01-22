@@ -2,40 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\RouteNames;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    /**
+     * List categories
+     */
+    public function indexCategory()
     {
-        return Category::latest()->get();
+        $categories = Category::where('status', 'active')
+            ->latest()
+            ->get();
+
+        return view('inventory.categories.category-list', [
+            'categories' => $categories
+        ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Store category
+     */
+    public function storeCategory(Request $request)
     {
-        return Category::create($request->validate([
-            'category_name' => 'required|unique:categories',
-            'status' => 'required|in:active,inactive'
-        ]));
+        $request->validate([
+            'category_name' => 'required|unique:categories,category_name',
+            'status'        => 'required|in:active,inactive',
+        ]);
+
+        $category = new Category();
+        $category->category_name = $request->category_name;
+        $category->status = $request->status;
+
+        $category->save();
+
+        return redirect()
+            ->route(RouteNames::CATEGORY_LIST)
+            ->with('success', 'Category added successfully');
     }
 
-    public function show($id)
+    /**
+     * Show single category
+     */
+    public function showCategory($id)
     {
-        return Category::with('products')->findOrFail($id);
+        $category = Category::with('products')->findOrFail($id);
+
+        return view('inventory.categories.category-show', [
+            'category' => $category
+        ]);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Update category
+     */
+    public function updateCategory(Request $request, $id)
     {
         $category = Category::findOrFail($id);
-        $category->update($request->all());
-        return $category;
+
+        $data = $request->validate([
+            'category_name' => 'sometimes|unique:categories,category_name,' . $id,
+            'status'        => 'sometimes|in:active,inactive',
+        ]);
+
+        $category->update($data);
+
+        return redirect()
+            ->route(RouteNames::CATEGORY_LIST)
+            ->with('success', 'Category updated successfully');
     }
 
-    public function destroy($id)
+    /**
+     * Soft delete category
+     */
+    public function deleteCategory($id)
     {
-        Category::findOrFail($id)->delete();
-        return response()->json(['message' => 'Category deleted']);
+        $category = Category::findOrFail($id);
+        $category->delete();
+
+        return redirect()
+            ->route(RouteNames::CATEGORY_LIST)
+            ->with('success', 'Category deleted successfully');
     }
 }
-
