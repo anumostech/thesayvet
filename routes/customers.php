@@ -5,8 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 
 Route::prefix('account')->middleware('auth')->group(function () {
-    Route::get('/', [CustomerController::class, 'dashboard'])->name(RouteNames::DASHBOARD);
-
     Route::prefix('customers')->group(function () {
         Route::get('/', [CustomerController::class, 'indexCustomer'])->name(RouteNames::CUSTOMER_LIST);
         Route::get('/add', [CustomerController::class, 'addCustomer'])->name(RouteNames::CUSTOMER_ADD);

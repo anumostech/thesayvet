@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 
 class UserDetailController extends Controller
 {
-    public function index()
+    public function indexUserDetail()
     {
         $userDetails = UserDetail::with('user')->get();
-        return view('user_details.index', compact('userDetails'));
+        return view('user_details.index', [
+            'userDetails' => $userDetails
+        ]);
     }
 
     public function create()
@@ -20,7 +22,7 @@ class UserDetailController extends Controller
         return view('user_details.create', compact('users'));
     }
 
-    public function store(Request $request)
+    public function storeUserDetail(Request $request)
     {
         $request->validate([
             'user_id'    => 'required|exists:users,id',
@@ -32,20 +34,31 @@ class UserDetailController extends Controller
             'type'       => 'required|in:admin,sales,accounts,warehouse',
         ]);
 
-        UserDetail::create($request->all());
+        $userDetail = new UserDetail();
+        $userDetail->user_id = $request->user_id;
+        $userDetail->first_name = $request->first_name;
+        $userDetail->last_name = $request->last_name;
+        $userDetail->email = $request->email;
+        $userDetail->phone = $request->phone;
+        $userDetail->type = $request->type;
 
-        return redirect()->back()->with('success', 'User detail created');
+        $userDetail->save();
+
+        return redirect()->back()->with('success', 'User detail added successfully');
     }
 
-    public function edit($id)
+    public function editUserDetail($id)
     {
         $userDetail = UserDetail::findOrFail($id);
         $users = User::all();
 
-        return view('user_details.edit', compact('userDetail', 'users'));
+        return view('user_details.edit', [
+            'user_details' => $userDetail,
+            'users' => $users
+        ]);
     }
 
-    public function update(Request $request, $id)
+    public function updateUserDetail(Request $request, $id)
     {
         $request->validate([
             'first_name' => 'required|string|max:100',
@@ -59,12 +72,14 @@ class UserDetailController extends Controller
         $userDetail = UserDetail::findOrFail($id);
         $userDetail->update($request->all());
 
-        return redirect()->back()->with('success', 'User detail updated');
+        return redirect()->back()->with('success', 'User detail updated successfully');
     }
 
-    public function destroy($id)
+    public function deleteUserDetail($id)
     {
-        UserDetail::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'User detail deleted');
+        $userDetail = UserDetail::findOrFail($id);
+        $userDetail->delete();
+        
+        return redirect()->back()->with('success', 'User detail deleted successfully');
     }
 }

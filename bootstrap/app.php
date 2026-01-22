@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             Route::middleware(['web', 'auth'])->group(function () {
                 require base_path('routes/users.php');
-                require base_path('routes/staff.php');
+                require base_path('routes/userdetails.php');
                 require base_path('routes/customers.php');
                 require base_path('routes/categories.php');
                 require base_path('routes/products.php');
